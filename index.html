@@ -81,7 +81,8 @@
 			const eyebrow = document.getElementById('overlay-eyebrow');
 			const title = document.getElementById('overlay-title');
 			const message = document.getElementById('overlay-message');
-			const serverHint = 'Please reopen through http://127.0.0.1:4173 and hard refresh with Ctrl + F5.';
+			const localHint = 'Please reopen through http://127.0.0.1:4173 and hard refresh with Ctrl + F5.';
+			const pagesHint = 'Hard refresh the page and confirm the published site can reach the CDN module files.';
 
 			window.__SKYLINE_MODULE_LOADER_STARTED__ = false;
 
@@ -117,8 +118,10 @@
 					'Boot timeout',
 					'main.js did not start',
 					window.location.protocol === 'file:'
-						? `This page was opened as a local file, so the browser blocked the three.js modules. ${serverHint}`
-						: `The page could not start the local three.js module in time. ${serverHint}`
+						? `This page was opened as a local file, so the browser blocked the three.js modules. ${localHint}`
+						: window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+							? `The page could not start the local three.js module in time. ${localHint}`
+							: `The page could not start the three.js modules in time. ${pagesHint}`
 				);
 			}, 8000);
 		})();
@@ -127,8 +130,8 @@
 	<script type="importmap">
 		{
 			"imports": {
-				"three": "./node_modules/three/build/three.module.js",
-				"three/addons/": "./node_modules/three/examples/jsm/"
+				"three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
 			}
 		}
 	</script>
