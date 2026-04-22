@@ -81,34 +81,46 @@
 			const eyebrow = document.getElementById('overlay-eyebrow');
 			const title = document.getElementById('overlay-title');
 			const message = document.getElementById('overlay-message');
+			const serverHint = 'Please reopen through http://127.0.0.1:4173 and hard refresh with Ctrl + F5.';
 
-			window.__SKYLINE_BOOTED__ = false;
+			window.__SKYLINE_MODULE_LOADER_STARTED__ = false;
+
+			function showBootIssue(nextEyebrow, nextTitle, nextMessage) {
+				overlay.classList.add('is-visible');
+				eyebrow.textContent = nextEyebrow;
+				title.textContent = nextTitle;
+				message.textContent = nextMessage;
+			}
 
 			window.addEventListener('error', function (event) {
-				overlay.classList.add('is-visible');
-				eyebrow.textContent = 'Startup error';
-				title.textContent = 'The game script crashed';
-				message.textContent = event.message || 'An unexpected startup error happened before the chase began.';
+				showBootIssue(
+					'Startup error',
+					'The game script crashed',
+					event.message || 'An unexpected startup error happened before the chase began.'
+				);
 			});
 
 			window.addEventListener('unhandledrejection', function (event) {
-				overlay.classList.add('is-visible');
-				eyebrow.textContent = 'Unhandled promise';
-				title.textContent = 'Asset or module load failed';
-				message.textContent = String(event.reason || 'The page hit a promise rejection during startup.');
+				showBootIssue(
+					'Unhandled promise',
+					'Asset or module load failed',
+					String(event.reason || 'The page hit a promise rejection during startup.')
+				);
 			});
 
 			window.setTimeout(function () {
-				if (window.__SKYLINE_BOOTED__) {
+				if (window.__SKYLINE_MODULE_LOADER_STARTED__) {
 					return;
 				}
 
-				overlay.classList.add('is-visible');
-				eyebrow.textContent = 'Boot timeout';
-				title.textContent = 'main.js did not start';
-				message.textContent =
-					'The page could not start the local three.js module. Please reopen through http://127.0.0.1:4173 and hard refresh with Ctrl + F5.';
-			}, 4000);
+				showBootIssue(
+					'Boot timeout',
+					'main.js did not start',
+					window.location.protocol === 'file:'
+						? `This page was opened as a local file, so the browser blocked the three.js modules. ${serverHint}`
+						: `The page could not start the local three.js module in time. ${serverHint}`
+				);
+			}, 8000);
 		})();
 	</script>
 
@@ -120,6 +132,20 @@
 			}
 		}
 	</script>
-	<script type="module" src="main.js"></script>
+	<script type="module">
+		window.__SKYLINE_MODULE_LOADER_STARTED__ = true;
+		import('./main.js').catch((error) => {
+			const overlay = document.getElementById('status-overlay');
+			const eyebrow = document.getElementById('overlay-eyebrow');
+			const title = document.getElementById('overlay-title');
+			const message = document.getElementById('overlay-message');
+
+			overlay.classList.add('is-visible');
+			eyebrow.textContent = 'Module load failed';
+			title.textContent = 'main.js could not boot';
+			message.textContent = error instanceof Error ? error.message : String(error);
+			console.error(error);
+		});
+	</script>
 </body>
 </html>
