@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Car racing game</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div id="app">
+		<div id="scene-root"></div>
+
+		<header class="hud">
+			<button id="settings-button" class="hud-button" type="button" aria-expanded="false">
+				<span class="hud-button__icon">+</span>
+				<span>Settings</span>
+			</button>
+
+			<div class="hud-stats">
+				<div class="stat-card">
+					<span class="stat-label">Score</span>
+					<strong id="score-value">0</strong>
+				</div>
+				<div class="stat-card">
+					<span class="stat-label">Lives</span>
+					<strong id="lives-value">3</strong>
+				</div>
+				<div class="stat-card">
+					<span class="stat-label">Speed</span>
+					<strong id="speed-value">090</strong>
+				</div>
+			</div>
+		</header>
+
+		<aside id="settings-panel" class="settings-panel" aria-hidden="true">
+			<div class="settings-panel__header">
+				<p>Track Control</p>
+				<h2>Car racing game</h2>
+			</div>
+
+			<label class="settings-row">
+				<span>Day/Night Cycle</span>
+				<input id="cycle-toggle" type="checkbox" checked>
+			</label>
+
+			<label class="settings-row">
+				<span>Traffic Density</span>
+				<input id="density-range" type="range" min="0.85" max="1.4" step="0.05" value="1">
+			</label>
+
+			<div class="settings-actions">
+				<button id="resume-button" class="panel-button" type="button">Resume</button>
+				<button id="restart-button" class="panel-button panel-button--ghost" type="button">Restart</button>
+			</div>
+
+			<p class="settings-tip">Controls: <strong>A</strong> dodge left, <strong>D</strong> dodge right, <strong>Esc</strong> pause.</p>
+		</aside>
+
+		<div id="status-overlay" class="status-overlay is-visible" aria-live="polite">
+			<div class="status-card">
+				<p id="overlay-eyebrow" class="status-eyebrow">by author: 28_btk</p>
+				<h1 id="overlay-title">Car racing game</h1>
+				<p id="overlay-message">
+					Rules: Use A and D to change lanes. Avoid every vehicle on the road. You lose after 3 crashes. Press Esc to pause.
+				</p>
+				<div id="overlay-actions" class="status-actions"></div>
+			</div>
+		</div>
+
+		<div id="toast" class="toast" aria-live="polite"></div>
+
+		<footer class="footer-hint">
+			<p>A / D to dodge between lanes. Hit 3 objects and the cops win.</p>
+			<p>Esc pauses the run at any time.</p>
+		</footer>
+	</div>
+
+	<script>
+		(function () {
+			const overlay = document.getElementById('status-overlay');
+			const eyebrow = document.getElementById('overlay-eyebrow');
+			const title = document.getElementById('overlay-title');
+			const message = document.getElementById('overlay-message');
+
+			window.__SKYLINE_BOOTED__ = false;
+
+			window.addEventListener('error', function (event) {
+				overlay.classList.add('is-visible');
+				eyebrow.textContent = 'Startup error';
+				title.textContent = 'The game script crashed';
+				message.textContent = event.message || 'An unexpected startup error happened before the chase began.';
+			});
+
+			window.addEventListener('unhandledrejection', function (event) {
+				overlay.classList.add('is-visible');
+				eyebrow.textContent = 'Unhandled promise';
+				title.textContent = 'Asset or module load failed';
+				message.textContent = String(event.reason || 'The page hit a promise rejection during startup.');
+			});
+
+			window.setTimeout(function () {
+				if (window.__SKYLINE_BOOTED__) {
+					return;
+				}
+
+				overlay.classList.add('is-visible');
+				eyebrow.textContent = 'Boot timeout';
+				title.textContent = 'main.js did not start';
+				message.textContent =
+					'The page could not start the local three.js module. Please reopen through http://127.0.0.1:4173 and hard refresh with Ctrl + F5.';
+			}, 4000);
+		})();
+	</script>
+
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "./node_modules/three/build/three.module.js",
+				"three/addons/": "./node_modules/three/examples/jsm/"
+			}
+		}
+	</script>
+	<script type="module" src="main.js"></script>
+</body>
+</html>
