@@ -82,7 +82,7 @@
 			const title = document.getElementById('overlay-title');
 			const message = document.getElementById('overlay-message');
 			const localHint = 'Please reopen through http://127.0.0.1:4173 and hard refresh with Ctrl + F5.';
-			const pagesHint = 'Hard refresh the page and confirm the published site can reach the CDN module files.';
+			const pagesHint = 'Hard refresh the page and confirm the published site includes the latest JS files from this repo.';
 
 			window.__SKYLINE_MODULE_LOADER_STARTED__ = false;
 
@@ -127,14 +127,6 @@
 		})();
 	</script>
 
-	<script type="importmap">
-		{
-			"imports": {
-				"three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
-				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
-			}
-		}
-	</script>
 	<script type="module">
 		window.__SKYLINE_MODULE_LOADER_STARTED__ = true;
 		import('./main.js').catch((error) => {
